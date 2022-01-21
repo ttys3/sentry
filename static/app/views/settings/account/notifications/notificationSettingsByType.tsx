@@ -56,13 +56,13 @@ const typeMappedChildren = {
   quota: ['quotaErrors', 'quotaTransactions', 'quotaAttachments', 'quotaWarnings'],
 };
 
-const getTypeForQuery = (notificationType: string) => {
-  const children = typeMappedChildren[notificationType];
-  if (!children) {
-    return notificationType;
+const getQueryParams = (notificationType: string) => {
+  // if we need multiple settings on this page
+  // then omit the type so we can load all settings
+  if (notificationType in typeMappedChildren) {
+    return null;
   }
-  const types = [notificationType, ...children];
-  return types.join(',');
+  return {type: notificationType};
 };
 
 class NotificationSettingsByType extends AsyncComponent<Props, State> {
@@ -81,7 +81,7 @@ class NotificationSettingsByType extends AsyncComponent<Props, State> {
       [
         'notificationSettings',
         `/users/me/notification-settings/`,
-        {query: {type: getTypeForQuery(notificationType)}},
+        {query: getQueryParams(notificationType)},
       ],
       ['identities', `/users/me/identities/`, {query: {provider: 'slack'}}],
       [

@@ -1,7 +1,5 @@
-from __future__ import annotations
-
 from collections import defaultdict
-from typing import Any, Iterable, Mapping, MutableMapping, Set, Union
+from typing import Any, Iterable, Mapping, MutableMapping, Optional, Set, Union
 
 from sentry.api.serializers import Serializer
 from sentry.models import NotificationSetting, Team, User
@@ -18,10 +16,10 @@ class NotificationSettingsSerializer(Serializer):  # type: ignore
 
     def get_attrs(
         self,
-        item_list: Iterable[Union[Team, User]],
+        item_list: Iterable[Union["Team", "User"]],
         user: User,
-        type: Iterable[NotificationSettingTypes] | NotificationSettingTypes | None = None,
-    ) -> Mapping[Union[Team, User], Mapping[str, Iterable[Any]]]:
+        **kwargs: Any,
+    ) -> Mapping[Union["Team", "User"], Mapping[str, Iterable[Any]]]:
         """
         This takes a list of recipients (which are either Users or Teams,
         because both can have Notification Settings). The function
@@ -31,17 +29,18 @@ class NotificationSettingsSerializer(Serializer):  # type: ignore
         :param item_list: Either a Set of User or Team objects whose
             notification settings should be serialized.
         :param user: The user who will be viewing the notification settings.
-        :param type: (Optional) NotificationSettingTypes enum value. e.g. WORKFLOW, DEPLOY
-            or an array of enum values
+        :param kwargs: Dict of optional filter options:
+            - type: NotificationSettingTypes enum value. e.g. WORKFLOW, DEPLOY.
         """
+        type_option: Optional[NotificationSettingTypes] = kwargs.get("type")
         actor_mapping = {recipient.actor_id: recipient for recipient in item_list}
 
         notifications_settings = NotificationSetting.objects._filter(
-            type=type,
+            type=type_option,
             target_ids=actor_mapping.keys(),
         )
 
-        results: MutableMapping[Union[Team, User], MutableMapping[str, Set[Any]]] = defaultdict(
+        results: MutableMapping[Union["Team", "User"], MutableMapping[str, Set[Any]]] = defaultdict(
             lambda: defaultdict(set)
         )
 
@@ -53,20 +52,20 @@ class NotificationSettingsSerializer(Serializer):  # type: ignore
             # This works because both User and Team models implement `get_projects`.
             results[recipient]["projects"] = recipient.get_projects()
 
-            if isinstance(recipient, Team):
+            if type(recipient) == Team:
                 results[recipient]["organizations"] = {recipient.organization}
 
-            if isinstance(recipient, User):
+            if type(recipient) == User:
                 results[recipient]["organizations"] = user.get_orgs()
 
         return results
 
     def serialize(
         self,
-        obj: Union[Team, User],
+        obj: Union["Team", "User"],
         attrs: Mapping[str, Iterable[Any]],
         user: User,
-        type: Iterable[NotificationSettingTypes] | NotificationSettingTypes | None = None,
+        **kwargs: Any,
     ) -> Mapping[str, Mapping[str, Mapping[int, Mapping[str, str]]]]:
         """
         Convert a user or team's NotificationSettings to a python object
@@ -94,14 +93,8 @@ class NotificationSettingsSerializer(Serializer):  # type: ignore
         :param kwargs: The same `kwargs` as `get_attrs`.
         :returns A mapping. See example.
         """
-        # ensure type is array
-        if type:
-            if isinstance(type, Iterable):
-                types_to_serialize = set(type)
-            else:
-                types_to_serialize = {type}
-        else:
-            types_to_serialize = set(VALID_VALUES_FOR_KEY.keys())
+        type_option: Optional[NotificationSettingTypes] = kwargs.get("type")
+        types_to_serialize = {type_option} if type_option else set(VALID_VALUES_FOR_KEY.keys())
 
         project_ids = {_.id for _ in attrs["projects"]}
         organization_ids = {_.id for _ in attrs["organizations"]}

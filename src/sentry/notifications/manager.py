@@ -148,7 +148,7 @@ class NotificationsManager(BaseManager["NotificationSetting"]):
     def _filter(
         self,
         provider: ExternalProviders | None = None,
-        type: NotificationSettingTypes | Iterable[NotificationSettingTypes] | None = None,
+        type: NotificationSettingTypes | None = None,
         scope_type: NotificationScopeType | None = None,
         scope_identifier: int | None = None,
         target_ids: Iterable[int] | None = None,
@@ -159,10 +159,7 @@ class NotificationsManager(BaseManager["NotificationSetting"]):
             filters["provider"] = provider.value
 
         if type:
-            if isinstance(type, Iterable):
-                filters["type__in"] = list(map(lambda x: x.value, type))
-            else:
-                filters["type"] = type.value
+            filters["type"] = type.value
 
         if scope_type:
             filters["scope_type"] = scope_type.value

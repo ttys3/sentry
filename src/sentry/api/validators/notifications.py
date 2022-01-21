@@ -64,15 +64,8 @@ def validate_projects(
     return intersect_dict_set(projects_by_id, project_ids_to_look_up)
 
 
-def validate_type_option(type: Optional[str]) -> Optional[List[NotificationSettingTypes]]:
-    return validate_types(type) if type else None
-
-
-def validate_types(
-    type: str, context: Optional[List[str]] = None
-) -> List[NotificationSettingTypes]:
-    types_split = type.split(",")
-    return list(map(lambda x: validate_type(x, context), types_split))
+def validate_type_option(type: Optional[str]) -> Optional[NotificationSettingTypes]:
+    return validate_type(type) if type else None
 
 
 def validate_type(type: str, context: Optional[List[str]] = None) -> NotificationSettingTypes:
