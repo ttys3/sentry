@@ -90,7 +90,7 @@ function TeamFilter({
         <InputWrapper>
           <StyledInput
             autoFocus
-            placeholder={t('Filter by team slug')}
+            placeholder={t('Search by team')}
             onClick={event => {
               event.stopPropagation();
             }}
