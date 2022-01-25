@@ -4,7 +4,7 @@ import * as qs from 'query-string';
 
 import GroupingActions from 'sentry/actions/groupingActions';
 import Alert from 'sentry/components/alert';
-import LoadingError from 'sentry/components/loadingError';
+import {LoadingError} from 'sentry/components/loadingError';
 import LoadingIndicator from 'sentry/components/loadingIndicator';
 import {t} from 'sentry/locale';
 import GroupingStore, {Fingerprint} from 'sentry/stores/groupingStore';

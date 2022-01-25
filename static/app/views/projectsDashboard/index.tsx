@@ -10,7 +10,7 @@ import {Client} from 'sentry/api';
 import Button from 'sentry/components/button';
 import IdBadge from 'sentry/components/idBadge';
 import Link from 'sentry/components/links/link';
-import LoadingError from 'sentry/components/loadingError';
+import {LoadingError} from 'sentry/components/loadingError';
 import LoadingIndicator from 'sentry/components/loadingIndicator';
 import NoProjectMessage from 'sentry/components/noProjectMessage';
 import PageHeading from 'sentry/components/pageHeading';

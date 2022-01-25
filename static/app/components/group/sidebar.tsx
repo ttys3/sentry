@@ -13,7 +13,7 @@ import GroupParticipants from 'sentry/components/group/participants';
 import GroupReleaseStats from 'sentry/components/group/releaseStats';
 import SuggestedOwners from 'sentry/components/group/suggestedOwners/suggestedOwners';
 import GroupTagDistributionMeter from 'sentry/components/group/tagDistributionMeter';
-import LoadingError from 'sentry/components/loadingError';
+import {LoadingError} from 'sentry/components/loadingError';
 import Placeholder from 'sentry/components/placeholder';
 import {t} from 'sentry/locale';
 import space from 'sentry/styles/space';

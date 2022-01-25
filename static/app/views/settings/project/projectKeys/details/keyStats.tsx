@@ -3,7 +3,7 @@ import {RouteComponentProps} from 'react-router';
 
 import {Client} from 'sentry/api';
 import MiniBarChart from 'sentry/components/charts/miniBarChart';
-import LoadingError from 'sentry/components/loadingError';
+import {LoadingError} from 'sentry/components/loadingError';
 import {Panel, PanelBody, PanelHeader} from 'sentry/components/panels';
 import Placeholder from 'sentry/components/placeholder';
 import {t} from 'sentry/locale';

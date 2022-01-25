@@ -3,7 +3,7 @@ import {RouteComponentProps} from 'react-router';
 
 import {fetchOrganizationEnvironments} from 'sentry/actionCreators/environments';
 import {Client} from 'sentry/api';
-import LoadingError from 'sentry/components/loadingError';
+import {LoadingError} from 'sentry/components/loadingError';
 import LoadingIndicator from 'sentry/components/loadingIndicator';
 import {t} from 'sentry/locale';
 import OrganizationEnvironmentsStore from 'sentry/stores/organizationEnvironmentsStore';

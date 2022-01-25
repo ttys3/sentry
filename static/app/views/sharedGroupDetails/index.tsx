@@ -7,7 +7,7 @@ import NotFound from 'sentry/components/errors/notFound';
 import {BorderlessEventEntries} from 'sentry/components/events/eventEntries';
 import Footer from 'sentry/components/footer';
 import Link from 'sentry/components/links/link';
-import LoadingError from 'sentry/components/loadingError';
+import {LoadingError} from 'sentry/components/loadingError';
 import LoadingIndicator from 'sentry/components/loadingIndicator';
 import SentryDocumentTitle from 'sentry/components/sentryDocumentTitle';
 import {t} from 'sentry/locale';

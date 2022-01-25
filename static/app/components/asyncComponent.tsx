@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 
 import {Client, ResponseMeta} from 'sentry/api';
 import AsyncComponentSearchInput from 'sentry/components/asyncComponentSearchInput';
-import LoadingError from 'sentry/components/loadingError';
+import {LoadingError} from 'sentry/components/loadingError';
 import LoadingIndicator from 'sentry/components/loadingIndicator';
 import {t} from 'sentry/locale';
 import {metric} from 'sentry/utils/analytics';

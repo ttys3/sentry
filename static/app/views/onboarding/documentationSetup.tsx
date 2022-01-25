@@ -9,7 +9,7 @@ import {loadDocs} from 'sentry/actionCreators/projects';
 import {Client} from 'sentry/api';
 import Alert, {alertStyles} from 'sentry/components/alert';
 import ExternalLink from 'sentry/components/links/externalLink';
-import LoadingError from 'sentry/components/loadingError';
+import {LoadingError} from 'sentry/components/loadingError';
 import {PlatformKey} from 'sentry/data/platformCategories';
 import platforms from 'sentry/data/platforms';
 import {IconInfo} from 'sentry/icons';

@@ -5,7 +5,7 @@ import pick from 'lodash/pick';
 import {Client} from 'sentry/api';
 import EmptyStateWarning from 'sentry/components/emptyStateWarning';
 import EventsTable from 'sentry/components/eventsTable/eventsTable';
-import LoadingError from 'sentry/components/loadingError';
+import {LoadingError} from 'sentry/components/loadingError';
 import LoadingIndicator from 'sentry/components/loadingIndicator';
 import Pagination from 'sentry/components/pagination';
 import {Panel, PanelBody} from 'sentry/components/panels';

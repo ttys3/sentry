@@ -2,7 +2,7 @@ import {useEffect, useState} from 'react';
 import {browserHistory, RouteComponentProps} from 'react-router';
 
 import {Client} from 'sentry/api';
-import LoadingError from 'sentry/components/loadingError';
+import {LoadingError} from 'sentry/components/loadingError';
 import LoadingIndicator from 'sentry/components/loadingIndicator';
 import {Organization} from 'sentry/types';
 import {trackAnalyticsEvent} from 'sentry/utils/analytics';

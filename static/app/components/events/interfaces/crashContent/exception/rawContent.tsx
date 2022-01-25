@@ -4,7 +4,7 @@ import styled from '@emotion/styled';
 import {Client} from 'sentry/api';
 import Button from 'sentry/components/button';
 import ClippedBox from 'sentry/components/clippedBox';
-import LoadingError from 'sentry/components/loadingError';
+import {LoadingError} from 'sentry/components/loadingError';
 import LoadingIndicator from 'sentry/components/loadingIndicator';
 import {t} from 'sentry/locale';
 import {ExceptionType, Organization, PlatformType, Project} from 'sentry/types';

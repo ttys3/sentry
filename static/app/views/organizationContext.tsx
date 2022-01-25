@@ -9,7 +9,7 @@ import {fetchOrganizationDetails} from 'sentry/actionCreators/organization';
 import ProjectActions from 'sentry/actions/projectActions';
 import {Client} from 'sentry/api';
 import Alert from 'sentry/components/alert';
-import LoadingError from 'sentry/components/loadingError';
+import {LoadingError} from 'sentry/components/loadingError';
 import LoadingTriangle from 'sentry/components/loadingTriangle';
 import SentryDocumentTitle from 'sentry/components/sentryDocumentTitle';
 import Sidebar from 'sentry/components/sidebar';

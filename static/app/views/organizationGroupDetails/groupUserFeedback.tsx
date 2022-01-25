@@ -3,7 +3,7 @@ import {RouteComponentProps} from 'react-router';
 import isEqual from 'lodash/isEqual';
 
 import EventUserFeedback from 'sentry/components/events/userFeedback';
-import LoadingError from 'sentry/components/loadingError';
+import {LoadingError} from 'sentry/components/loadingError';
 import LoadingIndicator from 'sentry/components/loadingIndicator';
 import Pagination from 'sentry/components/pagination';
 import {Group, Organization, Project, UserReport} from 'sentry/types';

@@ -7,7 +7,7 @@ import Avatar from 'sentry/components/avatar';
 import AvatarCropper from 'sentry/components/avatarCropper';
 import Button from 'sentry/components/button';
 import ExternalLink from 'sentry/components/links/externalLink';
-import LoadingError from 'sentry/components/loadingError';
+import {LoadingError} from 'sentry/components/loadingError';
 import LoadingIndicator from 'sentry/components/loadingIndicator';
 import {Panel, PanelBody, PanelHeader} from 'sentry/components/panels';
 import Well from 'sentry/components/well';

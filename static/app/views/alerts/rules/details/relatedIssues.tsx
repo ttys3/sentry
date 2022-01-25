@@ -6,7 +6,7 @@ import Button from 'sentry/components/button';
 import {SectionHeading} from 'sentry/components/charts/styles';
 import EmptyStateWarning from 'sentry/components/emptyStateWarning';
 import GroupList from 'sentry/components/issues/groupList';
-import LoadingError from 'sentry/components/loadingError';
+import {LoadingError} from 'sentry/components/loadingError';
 import {Panel, PanelBody} from 'sentry/components/panels';
 import Tooltip from 'sentry/components/tooltip';
 import {IconInfo} from 'sentry/icons';

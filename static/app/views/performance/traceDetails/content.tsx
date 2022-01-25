@@ -13,7 +13,7 @@ import * as ScrollbarManager from 'sentry/components/events/interfaces/spans/scr
 import * as Layout from 'sentry/components/layouts/thirds';
 import ExternalLink from 'sentry/components/links/externalLink';
 import Link from 'sentry/components/links/link';
-import LoadingError from 'sentry/components/loadingError';
+import {LoadingError} from 'sentry/components/loadingError';
 import LoadingIndicator from 'sentry/components/loadingIndicator';
 import {MessageRow} from 'sentry/components/performance/waterfall/messageRow';
 import {

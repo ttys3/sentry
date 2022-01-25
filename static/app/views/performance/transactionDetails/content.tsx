@@ -12,7 +12,7 @@ import * as SpanEntryContext from 'sentry/components/events/interfaces/spans/con
 import RootSpanStatus from 'sentry/components/events/rootSpanStatus';
 import FileSize from 'sentry/components/fileSize';
 import * as Layout from 'sentry/components/layouts/thirds';
-import LoadingError from 'sentry/components/loadingError';
+import {LoadingError} from 'sentry/components/loadingError';
 import SentryDocumentTitle from 'sentry/components/sentryDocumentTitle';
 import TagsTable from 'sentry/components/tagsTable';
 import {IconOpen} from 'sentry/icons';

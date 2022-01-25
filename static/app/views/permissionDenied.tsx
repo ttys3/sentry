@@ -3,7 +3,7 @@ import {withRouter, WithRouterProps} from 'react-router';
 import * as Sentry from '@sentry/react';
 
 import ExternalLink from 'sentry/components/links/externalLink';
-import LoadingError from 'sentry/components/loadingError';
+import {LoadingError} from 'sentry/components/loadingError';
 import SentryDocumentTitle from 'sentry/components/sentryDocumentTitle';
 import {t, tct} from 'sentry/locale';
 import {PageContent} from 'sentry/styles/organization';

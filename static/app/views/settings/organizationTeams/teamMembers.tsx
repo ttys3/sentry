@@ -17,7 +17,7 @@ import {Item} from 'sentry/components/dropdownAutoComplete/types';
 import DropdownButton from 'sentry/components/dropdownButton';
 import IdBadge from 'sentry/components/idBadge';
 import Link from 'sentry/components/links/link';
-import LoadingError from 'sentry/components/loadingError';
+import {LoadingError} from 'sentry/components/loadingError';
 import LoadingIndicator from 'sentry/components/loadingIndicator';
 import {Panel, PanelHeader, PanelItem} from 'sentry/components/panels';
 import {IconSubtract, IconUser} from 'sentry/icons';

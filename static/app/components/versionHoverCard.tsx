@@ -7,7 +7,7 @@ import Button from 'sentry/components/button';
 import Clipboard from 'sentry/components/clipboard';
 import Hovercard from 'sentry/components/hovercard';
 import LastCommit from 'sentry/components/lastCommit';
-import LoadingError from 'sentry/components/loadingError';
+import {LoadingError} from 'sentry/components/loadingError';
 import LoadingIndicator from 'sentry/components/loadingIndicator';
 import RepoLabel from 'sentry/components/repoLabel';
 import TimeSince from 'sentry/components/timeSince';

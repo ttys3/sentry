@@ -10,7 +10,7 @@ import AutoSelectText from 'sentry/components/autoSelectText';
 import Button from 'sentry/components/button';
 import EmptyStateWarning from 'sentry/components/emptyStateWarning';
 import ExternalLink from 'sentry/components/links/externalLink';
-import LoadingError from 'sentry/components/loadingError';
+import {LoadingError} from 'sentry/components/loadingError';
 import LoadingIndicator from 'sentry/components/loadingIndicator';
 import {
   Panel,

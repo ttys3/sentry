@@ -2,7 +2,7 @@ import {Component} from 'react';
 
 import {Client} from 'sentry/api';
 import MiniBarChart from 'sentry/components/charts/miniBarChart';
-import LoadingError from 'sentry/components/loadingError';
+import {LoadingError} from 'sentry/components/loadingError';
 import LoadingIndicator from 'sentry/components/loadingIndicator';
 import withApi from 'sentry/utils/withApi';
 

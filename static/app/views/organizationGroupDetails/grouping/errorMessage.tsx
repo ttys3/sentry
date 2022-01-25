@@ -4,7 +4,7 @@ import Alert from 'sentry/components/alert';
 import Button from 'sentry/components/button';
 import ButtonBar from 'sentry/components/buttonBar';
 import FeatureBadge from 'sentry/components/featureBadge';
-import LoadingError from 'sentry/components/loadingError';
+import {LoadingError} from 'sentry/components/loadingError';
 import {Panel} from 'sentry/components/panels';
 import {t, tct} from 'sentry/locale';
 import {Group, Organization, Project} from 'sentry/types';

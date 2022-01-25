@@ -14,7 +14,7 @@ import EventVitals from 'sentry/components/events/eventVitals';
 import * as SpanEntryContext from 'sentry/components/events/interfaces/spans/context';
 import FileSize from 'sentry/components/fileSize';
 import * as Layout from 'sentry/components/layouts/thirds';
-import LoadingError from 'sentry/components/loadingError';
+import {LoadingError} from 'sentry/components/loadingError';
 import LoadingIndicator from 'sentry/components/loadingIndicator';
 import SentryDocumentTitle from 'sentry/components/sentryDocumentTitle';
 import TagsTable from 'sentry/components/tagsTable';

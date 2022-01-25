@@ -4,7 +4,7 @@ import * as Sentry from '@sentry/react';
 import PropTypes from 'prop-types';
 
 import {Client} from 'sentry/api';
-import LoadingError from 'sentry/components/loadingError';
+import {LoadingError} from 'sentry/components/loadingError';
 import LoadingIndicator from 'sentry/components/loadingIndicator';
 import PageFiltersContainer from 'sentry/components/organizations/pageFilters/container';
 import MissingProjectMembership from 'sentry/components/projects/missingProjectMembership';

@@ -7,7 +7,7 @@ import AsyncComponent from 'sentry/components/asyncComponent';
 import Button from 'sentry/components/button';
 import {DateTimeObject} from 'sentry/components/charts/utils';
 import Link from 'sentry/components/links/link';
-import LoadingError from 'sentry/components/loadingError';
+import {LoadingError} from 'sentry/components/loadingError';
 import PanelTable from 'sentry/components/panels/panelTable';
 import {IconChevron, IconList, IconStar} from 'sentry/icons';
 import {t, tct} from 'sentry/locale';
