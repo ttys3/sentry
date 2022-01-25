@@ -1,5 +1,6 @@
 import * as React from 'react';
 import styled from '@emotion/styled';
+import * as Sentry from '@sentry/react';
 
 import Alert from 'sentry/components/alert';
 import Button from 'sentry/components/button';
@@ -17,6 +18,19 @@ interface LoadingErrorProps {
  * Renders an Alert box of type "error". Renders a "Retry" button only if a `onRetry` callback is defined.
  */
 function LoadingError({message, onRetry}: LoadingErrorProps): React.ReactElement {
+  const handleRetry = React.useCallback(() => {
+    if (!onRetry) {
+      return;
+    }
+
+    try {
+      onRetry();
+    } catch (e) {
+      Sentry.captureException(e);
+      // Do nothing, we just want to make sure that an error does not propagate to our component
+    }
+  }, [onRetry]);
+
   return (
     <StyledAlert type="error">
       <Content>
@@ -25,7 +39,7 @@ function LoadingError({message, onRetry}: LoadingErrorProps): React.ReactElement
           {message ?? t('There was an error loading data.')}
         </div>
         {onRetry ? (
-          <Button onClick={onRetry} type="button" priority="default" size="small">
+          <Button onClick={handleRetry} type="button" priority="default" size="small">
             {t('Retry')}
           </Button>
         ) : null}
