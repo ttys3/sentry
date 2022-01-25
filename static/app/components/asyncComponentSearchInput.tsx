@@ -6,6 +6,7 @@ import debounce from 'lodash/debounce';
 import {Client, ResponseMeta} from 'sentry/api';
 import LoadingIndicator from 'sentry/components/loadingIndicator';
 import {t} from 'sentry/locale';
+import {isRenderFunc} from 'sentry/utils/isRenderFunc';
 import Input from 'sentry/views/settings/components/forms/controls/input';
 
 type RenderProps = {
@@ -15,7 +16,28 @@ type RenderProps = {
   value: string;
 };
 
-type DefaultProps = {
+function DefaultSearchBar({
+  busy,
+  handleSearch,
+  className,
+  placeholder,
+  handleInputChange,
+  query,
+}): React.ReactElement {
+  return (
+    <Form onSubmit={handleSearch}>
+      <Input
+        value={query}
+        onChange={handleInputChange}
+        className={className}
+        placeholder={placeholder}
+      />
+      {busy ? <StyledLoadingIndicator size={18} hideMessage mini /> : null}
+    </Form>
+  );
+}
+
+interface AsyncComponentSearchInputProps extends WithRouterProps {
   /**
    * Placeholder text in the search input
    */
@@ -24,97 +46,94 @@ type DefaultProps = {
    * Time in milliseconds to wait before firing off the request
    */
   debounceWait?: number; // optional, otherwise app/views/settings/organizationMembers/organizationMembersList.tsx L:191 is not happy
-};
 
-type Props = WithRouterProps &
-  DefaultProps & {
-    api: Client;
-    className?: string;
-    /**
-     * URL to make the search request to
-     */
-    url: string;
-    /**
-     * Updates URL with search query in the URL param: `query`
-     */
-    updateRoute?: boolean;
+  api: Client;
+  className?: string;
+  /**
+   * URL to make the search request to
+   */
+  url: string;
+  /**
+   * Updates URL with search query in the URL param: `query`
+   */
+  updateRoute?: boolean;
 
-    onSearchSubmit?: (query: string, event: React.FormEvent) => void;
-    onSuccess: (data: object, resp: ResponseMeta | undefined) => void;
-    onError: () => void;
+  onSearchSubmit?: (query: string, event: React.FormEvent) => void;
+  onSuccess: (data: object, resp: ResponseMeta | undefined) => void;
+  onError: () => void;
 
-    /**
-     * A render-prop child may be passed to handle custom rendering of the input.
-     */
-    children?: (otps: RenderProps) => React.ReactNode;
-  };
+  /**
+   * A render-prop child may be passed to handle custom rendering of the input.
+   */
+  children?: (otps: RenderProps) => React.ReactElement;
+}
 
-type State = {
-  query: string;
-  busy: boolean;
-};
-
-/**
- * This is a search input that can be easily used in AsyncComponent/Views.
- *
- * It probably doesn't make too much sense outside of an AsyncComponent atm.
- */
-class AsyncComponentSearchInput extends React.Component<Props, State> {
-  static defaultProps: DefaultProps = {
-    placeholder: t('Search...'),
-    debounceWait: 200,
-  };
-
-  state: State = {
+function AsyncComponentSearchInput({
+  placeholder = t('Search...'),
+  debounceWait = 200,
+  api,
+  className,
+  url,
+  updateRoute,
+  onSearchSubmit,
+  onSuccess,
+  onError,
+  router,
+  location,
+  children,
+}: AsyncComponentSearchInputProps): React.ReactElement {
+  const [{busy, query}, setState] = React.useState<{query: string; busy: boolean}>({
     query: '',
     busy: false,
-  };
+  });
 
-  immediateQuery = async (searchQuery: string) => {
-    const {location, api} = this.props;
-    this.setState({busy: true});
+  const queryResolver = React.useCallback(async (searchQuery: string) => {
+    setState({busy: true, query});
 
     try {
-      const [data, , resp] = await api.requestPromise(`${this.props.url}`, {
+      const [data, , resp] = await api.requestPromise(`${url}`, {
         includeAllArgs: true,
         method: 'GET',
         query: {...location.query, query: searchQuery},
       });
       // only update data if the request's query matches the current query
-      if (this.state.query === searchQuery) {
-        this.props.onSuccess(data, resp);
+      if (query === searchQuery) {
+        onSuccess(data, resp);
       }
     } catch {
-      this.props.onError();
+      onError();
     }
 
-    this.setState({busy: false});
-  };
+    setState({busy: false, query: searchQuery});
+  }, []);
 
-  query = debounce(this.immediateQuery, this.props.debounceWait);
+  const debouncedQueryResolver = React.useMemo(() => {
+    return debounce(queryResolver, debounceWait);
+  }, [queryResolver, debounceWait]);
 
-  handleChange = (query: string) => {
-    this.query(query);
-    this.setState({query});
-  };
+  const handleChange = React.useCallback((searchQuery: string) => {
+    debouncedQueryResolver(searchQuery);
+  }, []);
 
-  handleInputChange = (evt: React.ChangeEvent<HTMLInputElement>) =>
-    this.handleChange(evt.target.value);
+  const handleInputChange = React.useCallback(
+    (evt: React.ChangeEvent<HTMLInputElement>) => {
+      debouncedQueryResolver(evt.target.value);
+    },
+    [handleChange]
+  );
 
   /**
    * This is called when "Enter" (more specifically a form "submit" event) is pressed.
    */
-  handleSearch = (evt: React.FormEvent<HTMLFormElement>) => {
-    const {updateRoute, onSearchSubmit} = this.props;
+  function handleSearch(evt: React.FormEvent<HTMLFormElement>) {
     evt.preventDefault();
 
     // Update the URL to reflect search term.
     if (updateRoute) {
-      const {router, location} = this.props;
       router.push({
         pathname: location.pathname,
         query: {
-          query: this.state.query,
+          query,
         },
       });
     }
@@ -122,30 +141,44 @@ class AsyncComponentSearchInput extends React.Component<Props, State> {
     if (typeof onSearchSubmit !== 'function') {
       return;
     }
-    onSearchSubmit(this.state.query, evt);
-  };
+    onSearchSubmit(query, evt);
+  }
 
-  render() {
-    const {placeholder, children, className} = this.props;
-    const {busy, query} = this.state;
-
-    const defaultSearchBar = (
-      <Form onSubmit={this.handleSearch}>
-        <Input
-          value={query}
-          onChange={this.handleInputChange}
+  if (isRenderFunc<RenderProps>(children)) {
+    return children({
+      defaultSearchBar: (
+        <DefaultSearchBar
+          busy={busy}
+          handleSearch={handleSearch}
+          query={query}
+          handleInputChange={handleInputChange}
           className={className}
           placeholder={placeholder}
         />
-        {busy && <StyledLoadingIndicator size={18} hideMessage mini />}
-      </Form>
-    );
-
-    return children === undefined
-      ? defaultSearchBar
-      : children({defaultSearchBar, busy, value: query, handleChange: this.handleChange});
+      ),
+      busy,
+      value: query,
+      handleChange,
+    });
   }
+
+  return (
+    <DefaultSearchBar
+      busy={busy}
+      handleSearch={handleSearch}
+      query={query}
+      handleInputChange={handleInputChange}
+      className={className}
+      placeholder={placeholder}
+    />
+  );
 }
+
+/**
+ * This is a search input that can be easily used in AsyncComponent/Views.
+ *
+ * It probably doesn't make too much sense outside of an AsyncComponent atm.
+ */
 
 const StyledLoadingIndicator = styled(LoadingIndicator)`
   position: absolute;
