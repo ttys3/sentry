@@ -158,6 +158,7 @@ class WidgetCard extends React.Component<Props> {
         organization={organization}
         getCustomFieldRenderer={getIssueFieldRenderer}
         fieldHeaderMap={ISSUE_FIELD_TO_HEADER_MAP}
+        stickyHeaders
       />
     );
   }

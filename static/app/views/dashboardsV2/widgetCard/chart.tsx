@@ -105,6 +105,7 @@ class WidgetCardChart extends React.Component<WidgetCardChartProps> {
           metadata={result.meta}
           data={result.data}
           organization={organization}
+          stickyHeaders
         />
       );
     });

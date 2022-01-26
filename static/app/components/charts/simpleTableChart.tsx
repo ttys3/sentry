@@ -22,6 +22,7 @@ type Props = {
   className?: string;
   getCustomFieldRenderer?: typeof getFieldRenderer;
   fieldHeaderMap?: Record<string, string>;
+  stickyHeaders?: boolean;
 };
 
 class SimpleTableChart extends Component<Props> {
@@ -43,8 +44,16 @@ class SimpleTableChart extends Component<Props> {
   }
 
   render() {
-    const {className, loading, fields, metadata, data, title, fieldHeaderMap} =
-      this.props;
+    const {
+      className,
+      loading,
+      fields,
+      metadata,
+      data,
+      title,
+      fieldHeaderMap,
+      stickyHeaders,
+    } = this.props;
     const meta = metadata ?? {};
     const columns = decodeColumnOrder(fields.map(field => ({field})));
     return (
@@ -62,6 +71,7 @@ class SimpleTableChart extends Component<Props> {
             );
           })}
           isEmpty={!data?.length}
+          stickyHeaders={stickyHeaders}
           disablePadding
         >
           {data?.map((row, index) => this.renderRow(index, row, meta, columns))}
