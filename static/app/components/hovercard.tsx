@@ -8,15 +8,17 @@ import {motion} from 'framer-motion';
 import space from 'sentry/styles/space';
 import {domId} from 'sentry/utils/domId';
 
+export const HOVERCARD_PORTAL_ID = 'hovercard-portal';
+
 function findOrCreatePortal(): HTMLElement {
-  let portal = document.getElementById('hovercard-portal');
+  let portal = document.getElementById(HOVERCARD_PORTAL_ID);
 
   if (portal) {
     return portal;
   }
 
   portal = document.createElement('div');
-  portal.setAttribute('id', 'hovercard-portal');
+  portal.setAttribute('id', HOVERCARD_PORTAL_ID);
   document.body.appendChild(portal);
 
   return portal;
@@ -24,13 +26,13 @@ function findOrCreatePortal(): HTMLElement {
 
 interface HovercardProps {
   /**
-   * Time in ms until hovercard is hidden
-   */
-  displayTimeout: number;
-  /**
    * Position tooltip should take relative to the child element
    */
-  position: PopperProps['placement'];
+  position?: PopperProps['placement'];
+  /**
+   * Time in ms until hovercard is hidden
+   */
+  displayTimeout?: number;
   /**
    * Classname to apply to the hovercard
    */
@@ -101,7 +103,7 @@ function Hovercard(props: HovercardProps): React.ReactElement {
       // Else enqueue a new timeout
       inTimeout.current = window.setTimeout(
         () => setVisible(value),
-        props.displayTimeout
+        props.displayTimeout ?? 100
       );
     },
     [props.displayTimeout]
@@ -159,7 +161,7 @@ function Hovercard(props: HovercardProps): React.ReactElement {
         )}
       </Reference>
       {ReactDOM.createPortal(
-        <Popper placement={props.position} modifiers={popperModifiers}>
+        <Popper placement={props.position ?? 'top'} modifiers={popperModifiers}>
           {({ref, style, placement, arrowProps, scheduleUpdate}) => {
             // Nothing to render
             if (!props.body && !props.header) {
