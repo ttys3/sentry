@@ -25,11 +25,14 @@ describe('EnvironmentPageFilter', function () {
   });
   OrganizationStore.onUpdate(organization, {replace: true});
   ProjectsStore.loadInitialData(organization.projects);
-  PageFiltersStore.onInitializeUrlState({
-    projects: [2],
-    environments: [],
-    datetime: {start: null, end: null, period: '14d', utc: null},
-  });
+  PageFiltersStore.onInitializeUrlState(
+    {
+      projects: [2],
+      environments: [],
+      datetime: {start: null, end: null, period: '14d', utc: null},
+    },
+    new Set()
+  );
 
   it('can pick environment', function () {
     mountWithTheme(
