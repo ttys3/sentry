@@ -39,6 +39,7 @@ def pytest_runtest_makereport(item, call):
     # enable only in a workflow of GitHub Actions
     # ref: https://help.github.com/en/actions/configuring-and-managing-workflows/using-environment-variables#default-environment-variables
     if os.environ.get("GITHUB_ACTIONS") != "true":
+        print("No GITHUB_ACTIONS")
         return
 
     try:
@@ -70,8 +71,9 @@ def pytest_runtest_makereport(item, call):
             if not rel_path.startswith(".."):
                 filesystempath = rel_path
 
-        # 0-index to 1-index
-        lineno += 1
+        if lineno is not None:
+            # 0-index to 1-index
+            lineno += 1
 
         # get the name of the current failed test, with parametrize info
         longrepr = report.head_line or item.name
