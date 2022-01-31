@@ -73,7 +73,7 @@ type Props = {
   /**
    * Fired when widgets are added/removed/sorted.
    */
-  onUpdate: (widgets: Widget[]) => void;
+  onUpdate: (widgets: Widget[], nextPosition?: Position) => void;
   onSetWidgetToBeUpdated: (widget: Widget) => void;
   handleUpdateWidgetList: (widgets: Widget[]) => void;
   handleAddCustomWidget: (widget: Widget) => void;
@@ -485,7 +485,8 @@ class Dashboard extends Component<Props, State> {
     this.setState({
       layouts: newLayouts,
     });
-    onUpdate(newWidgets);
+    const [nextPosition] = getNextAvailablePosition(columnDepths, 1);
+    onUpdate(newWidgets, nextPosition);
   };
 
   handleBreakpointChange = (newBreakpoint: string) => {

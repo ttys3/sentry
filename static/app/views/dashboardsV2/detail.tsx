@@ -1,5 +1,4 @@
 import {cloneElement, Component, isValidElement} from 'react';
-import type {Layout as RGLLayout} from 'react-grid-layout';
 import {browserHistory, PlainRoute, RouteComponentProps} from 'react-router';
 import styled from '@emotion/styled';
 import isEqual from 'lodash/isEqual';
@@ -30,7 +29,7 @@ import withOrganization from 'sentry/utils/withOrganization';
 import Controls from './controls';
 import Dashboard from './dashboard';
 import {DEFAULT_STATS_PERIOD} from './data';
-import {getDashboardLayout} from './layoutUtils';
+import {Position} from './layoutUtils';
 import DashboardTitle from './title';
 import {
   DashboardDetails,
@@ -67,7 +66,7 @@ type State = {
   dashboardState: DashboardState;
   modifiedDashboard: DashboardDetails | null;
   widgetToBeUpdated?: Widget;
-  layout: RGLLayout[];
+  nextAvailablePosition?: Position;
   widgetLimitReached: boolean;
 };
 
@@ -75,7 +74,6 @@ class DashboardDetail extends Component<Props, State> {
   state: State = {
     dashboardState: this.props.initialState,
     modifiedDashboard: this.updateModifiedDashboard(this.props.initialState),
-    layout: getDashboardLayout(this.props.dashboard.widgets),
     widgetLimitReached: this.props.dashboard.widgets.length >= MAX_WIDGETS,
   };
 
@@ -456,7 +454,7 @@ class DashboardDetail extends Component<Props, State> {
     this.setState({widgetToBeUpdated: widget});
   };
 
-  onUpdateWidget = (widgets: Widget[]) => {
+  onUpdateWidget = (widgets: Widget[], nextAvailablePosition?: Position) => {
     this.setState(
       (state: State) => ({
         ...state,
@@ -466,6 +464,7 @@ class DashboardDetail extends Component<Props, State> {
           ...(state.modifiedDashboard || this.props.dashboard),
           widgets,
         },
+        ...(nextAvailablePosition ? {nextAvailablePosition} : {}),
       }),
       this.updateRouteAfterSavingWidget
     );
