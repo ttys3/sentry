@@ -39,7 +39,6 @@ def pytest_runtest_makereport(item, call):
     # enable only in a workflow of GitHub Actions
     # ref: https://help.github.com/en/actions/configuring-and-managing-workflows/using-environment-variables#default-environment-variables
     if os.environ.get("GITHUB_ACTIONS") != "true":
-        print("No GITHUB_ACTIONS")
         return
 
     try:
@@ -48,7 +47,9 @@ def pytest_runtest_makereport(item, call):
         # then do not return the error
         import pytest_rerunfailures
 
-        if item.execution_count <= pytest_rerunfailures.get_reruns_count(item):
+        if hasattr(
+            item, "execution_count"
+        ) and item.execution_count <= pytest_rerunfailures.get_reruns_count(item):
             return
     except ImportError:
         pass
