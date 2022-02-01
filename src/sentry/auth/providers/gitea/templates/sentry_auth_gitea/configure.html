@@ -1,7 +1,11 @@
 <legend>Gitea Base URL</legend>
 
-<p>configured Gitea base URL: <strong>{{ base_url }}</strong></p>
+<p>configured Gitea base URL: <code>{{ base_url }}</code></p>
 
 <legend>Gitea Allowed Organizations</legend>
 
-<p>configured Gitea Organizations allowed login:  <strong>{{ allowed_organizations }}</strong></p>
+<p>configured Gitea Organizations allowed login:  <code>{{ allowed_organizations }}</code></p>
+
+<legend>Gitea Setup Tips</legend>
+
+<p>Redirect URI: <code>{{ sentry_url_prefix }}/auth/sso/</code></p>

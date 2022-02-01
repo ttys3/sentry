@@ -6,12 +6,15 @@ import os
 from sentry.auth.view import AuthView, ConfigureView
 from sentry.utils import json
 from sentry import http
+from sentry import options
 
 from .constants import (
     ERR_INVALID_RESPONSE,
     ERR_INVALID_ORGANIZATION,
 )
+
 logger = logging.getLogger('sentry.auth.gitea')
+
 
 class FetchUser(AuthView):
     def __init__(self, userinfo_url, version, allowed_organizations, *args, **kwargs):
@@ -30,7 +33,8 @@ class FetchUser(AuthView):
 
         verify_ssl = True
         if os.environ.get('SENTRY_FORCE_DISABLE_SSL_VERIFY'):
-            logger.warn('force disable ssl verify due to env var SENTRY_FORCE_DISABLE_SSL_VERIFY exists, url=%r', self.userinfo_url)
+            logger.warn('force disable ssl verify due to env var SENTRY_FORCE_DISABLE_SSL_VERIFY exists, url=%r',
+                        self.userinfo_url)
             verify_ssl = False
 
         try:
@@ -87,11 +91,13 @@ class FetchUser(AuthView):
 
 class GiteaConfigureView(ConfigureView):
     def dispatch(self, request, organization, auth_provider):
-        config = auth_provider.config
+        # config = auth_provider.config
         return self.render('sentry_auth_gitea/configure.html', {
-            'base_url': config.get('base_url') or 'warning: empty auth-gitea.base-url !!!',
-            'allowed_organizations': config.get('allowed_organizations') or 'allow any organizations',
+            'base_url': options.get('auth-gitea.base-url') or 'warning: empty auth-gitea.base-url !!!',
+            'allowed_organizations': options.get('auth-gitea.allowed-organizations') or 'allow any organizations',
+            'sentry_url_prefix': options.get('system.url-prefix'),
         })
+
 
 def extract_domain(email):
     return email.rsplit('@', 1)[-1]

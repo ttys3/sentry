@@ -91,6 +91,7 @@ class GiteaOAuth2Provider(OAuth2Provider):
         return self.get_access_token_url()
 
     def build_config(self, state):
+        logger.info('gitea build_config called: base_url=%s', self.get_base_url())
         return {
             'base_url': self.get_base_url(),
             'allowed_organizations': self.get_allowed_organizations(),
