@@ -7,18 +7,21 @@ from sentry.auth.providers.oauth2 import (
 )
 
 from .constants import (
-    AUTHORIZE_URL, ACCESS_TOKEN_URL, USERINFO_URL, DATA_VERSION, SCOPE
+    AUTHORIZE_ENDPOINT, ACCESS_TOKEN_ENDPOINT, USERINFO_ENDPOINT, DATA_VERSION, SCOPE
 )
 from .views import FetchUser, GiteaConfigureView
 
+import logging
+
+logger = logging.getLogger('sentry.auth.gitea')
+
 
 class GiteaOAuth2Login(OAuth2Login):
-    authorize_url = AUTHORIZE_URL
     scope = SCOPE
 
-    def __init__(self, client_id, domains=None):
-        self.domains = domains
-        super(GiteaOAuth2Login, self).__init__(client_id=client_id)
+    def __init__(self, client_id, authorize_url):
+        logger.info('GiteaOAuth2Login init, client_id=%s authorize_url=%s' % (client_id, authorize_url))
+        super(GiteaOAuth2Login, self).__init__(client_id=client_id, authorize_url=authorize_url)
 
     def get_authorize_params(self, state, redirect_uri):
         params = super(GiteaOAuth2Login, self).get_authorize_params(
@@ -35,23 +38,30 @@ class GiteaOAuth2Login(OAuth2Login):
 class GiteaOAuth2Provider(OAuth2Provider):
     name = 'Gitea'
 
-    def __init__(self, domain=None, domains=None, version=None, **config):
-        if domain:
-            if domains:
-                domains.append(domain)
-            else:
-                domains = [domain]
-        self.domains = domains
-        # if a domain is not configured this is part of the setup pipeline
-        # this is a bit complex in Sentry's SSO implementation as we don't
-        # provide a great way to get initial state for new setup pipelines
-        # vs missing state in case of migrations.
-        if domains is None:
-            version = DATA_VERSION
-        else:
-            version = None
+    def __init__(self, version=None, **config):
         self.version = version
         super(GiteaOAuth2Provider, self).__init__(**config)
+
+    @staticmethod
+    def get_base_url():
+        return options.get('auth-gitea.base-url')
+
+    def get_authorize_url(self):
+        return '%s%s' % (self.get_base_url(), AUTHORIZE_ENDPOINT)
+
+    def get_access_token_url(self):
+        return '%s%s' % (self.get_base_url(), ACCESS_TOKEN_ENDPOINT)
+
+    def get_userinfo_url(self):
+        return '%s%s' % (self.get_base_url(), USERINFO_ENDPOINT)
+
+    @staticmethod
+    def get_allowed_organizations():
+        orgs = options.get('auth-gitea.allowed-organizations')
+        if not orgs:
+            return []
+        else:
+            return orgs.split(',')
 
     def get_client_id(self):
         return options.get('auth-gitea.client-id')
@@ -64,53 +74,71 @@ class GiteaOAuth2Provider(OAuth2Provider):
 
     def get_auth_pipeline(self):
         return [
-            GiteaOAuth2Login(domains=self.domains, client_id=self.get_client_id()),
+            GiteaOAuth2Login(client_id=self.get_client_id(), authorize_url=self.get_authorize_url()),
             OAuth2Callback(
-                access_token_url=ACCESS_TOKEN_URL,
+                access_token_url=self.get_access_token_url(),
                 client_id=self.get_client_id(),
                 client_secret=self.get_client_secret(),
             ),
             FetchUser(
-                domains=self.domains,
+                userinfo_url=self.get_userinfo_url(),
                 version=self.version,
+                allowed_organizations=self.get_allowed_organizations(),
             ),
         ]
 
     def get_refresh_token_url(self):
-        return ACCESS_TOKEN_URL
+        return self.get_access_token_url()
 
     def build_config(self, state):
         return {
-            'domains': ['gitea-domain'],
+            'base_url': self.get_base_url(),
+            'allowed_organizations': self.get_allowed_organizations(),
             'version': DATA_VERSION,
         }
 
     def build_identity(self, state):
-        # https://developers.google.com/identity/protocols/OpenIDConnect#server-flow
-        # data.user => {
-        #      "iss":"accounts.gitea.com",
-        #      "at_hash":"HK6E_P6Dh8Y93mRNtsDB1Q",
-        #      "email_verified":"true",
-        #      "sub":"10769150350006150715113082367",
-        #      "azp":"1234987819200.apps.googleusercontent.com",
-        #      "email":"jsmith@example.com",
-        #      "aud":"1234987819200.apps.googleusercontent.com",
-        #      "iat":1353601026,
-        #      "exp":1353604926,
-        #      "hd":"example.com"
+        """
+        Return a mapping containing the identity information.
+        """
+
+        # https://github.com/go-gitea/gitea/blob/7f2530e004c9908f9ee18b4060c8d4837a72f93b/routers/web/auth/oauth.go#L259
+        # see type userInfoResponse struct
+        # if user not in any organizations, groups will be null
+        #
+        # data.user =>
+        # {
+        #     "sub": "1",
+        #     "name": "MyDisplayName",
+        #     "preferred_username": "ttys3",
+        #     "email": "admin@example.com",
+        #     "picture": "https://git.nomad.lan/avatar/e64c7d89f26bd1972efa854d13d7dd61",
+        #     "groups": [
+        #         "devops",
+        #         "devops:owners"
+        #     ]
         # }
+
         data = state['data']
         user_data = state['user']
 
-        # XXX(epurkhiser): We initially were using the email as the id key.
-        # This caused account dupes on domain changes. Migrate to the
-        # account-unique sub key.
-        user_id = MigratingIdentityId(id=user_data['sub'], legacy_id=user_data['email'])
+        logger.info(u'gitea build_identity got state.data: %s' % data)
+        logger.info(u'gitea build_identity got state.user: %s' % user_data)
 
+        # nickname
+        nickname = user_data['name']
+        if not nickname:
+            nickname = user_data['preferred_username']
+        if not nickname:
+            nickname = user_data['email']
+
+        # see src/sentry/auth/provider.py build_identity()
+        # The ``email`` and ``id`` keys are required, ``name`` is optional.
+        user_id = MigratingIdentityId(id=user_data['sub'], legacy_id=user_data['email'])
         return {
             'id': user_id,
             'email': user_data['email'],
-            'name': user_data['email'],
+            'name': nickname,
             'data': self.get_oauth_data(data),
-            'email_verified': "true",
+            'email_verified': False,
         }

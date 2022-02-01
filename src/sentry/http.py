@@ -11,6 +11,7 @@ import six
 import warnings
 import time
 import logging
+import os
 
 from sentry import options
 from django.core.exceptions import SuspiciousOperation
@@ -114,6 +115,10 @@ def safe_urlopen(
 
     if method is None:
         method = 'POST' if (data or json) else 'GET'
+
+    if verify_ssl and os.environ.get('SENTRY_FORCE_DISABLE_SSL_VERIFY'):
+        logger.warn('force disable ssl verify due to env var SENTRY_FORCE_DISABLE_SSL_VERIFY exists, url=%r', url)
+        verify_ssl = False
 
     response = session.request(
         method=method,
