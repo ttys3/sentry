@@ -20,7 +20,7 @@ class GiteaOAuth2Login(OAuth2Login):
     scope = SCOPE
 
     def __init__(self, client_id, authorize_url):
-        logger.info('GiteaOAuth2Login init, client_id=%s authorize_url=%s' % (client_id, authorize_url))
+        logger.debug('GiteaOAuth2Login init, client_id=%s authorize_url=%s' % (client_id, authorize_url))
         super(GiteaOAuth2Login, self).__init__(client_id=client_id, authorize_url=authorize_url)
 
     def get_authorize_params(self, state, redirect_uri):
@@ -91,7 +91,7 @@ class GiteaOAuth2Provider(OAuth2Provider):
         return self.get_access_token_url()
 
     def build_config(self, state):
-        logger.info('gitea build_config called: base_url=%s', self.get_base_url())
+        logger.debug('gitea build_config called: base_url=%s', self.get_base_url())
         return {
             'base_url': self.get_base_url(),
             'allowed_organizations': self.get_allowed_organizations(),
@@ -123,8 +123,8 @@ class GiteaOAuth2Provider(OAuth2Provider):
         data = state['data']
         user_data = state['user']
 
-        logger.info(u'gitea build_identity got state.data: %s' % data)
-        logger.info(u'gitea build_identity got state.user: %s' % user_data)
+        logger.debug(u'gitea build_identity got state.data: %s' % data)
+        logger.debug(u'gitea build_identity got state.user: %s' % user_data)
 
         # nickname
         nickname = user_data['name']

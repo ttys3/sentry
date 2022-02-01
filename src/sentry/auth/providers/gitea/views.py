@@ -25,8 +25,8 @@ class FetchUser(AuthView):
         super(FetchUser, self).__init__(*args, **kwargs)
 
     def dispatch(self, request, helper):
-        logger.info('gitea FetchUser.dispatch userinfo_url: %s' % self.userinfo_url)
-        logger.info('gitea FetchUser.dispatch allowed_organizations: %s' % self.allowed_organizations)
+        logger.debug('gitea FetchUser.dispatch userinfo_url: %s' % self.userinfo_url)
+        logger.debug('gitea FetchUser.dispatch allowed_organizations: %s' % self.allowed_organizations)
 
         data = helper.fetch_state('data')
         headers = {"Authorization": u'token %s' % data['access_token']}
@@ -52,7 +52,7 @@ class FetchUser(AuthView):
 
         try:
             payload = json.loads(req.content)
-            logger.info('gitea FetchUser.dispatch get user info response payload: %s' % payload)
+            logger.debug('gitea FetchUser.dispatch get user info response payload: %s' % payload)
         except Exception as exc:
             logger.error(u'Unable to decode payload: %s' % exc, exc_info=True)
             return helper.error(ERR_INVALID_RESPONSE)
