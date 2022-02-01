@@ -39,20 +39,19 @@ def pytest_runtest_makereport(item, call):
     # enable only in a workflow of GitHub Actions
     # ref: https://help.github.com/en/actions/configuring-and-managing-workflows/using-environment-variables#default-environment-variables
     if os.environ.get("GITHUB_ACTIONS") != "true":
+        print("No GITHUB_ACTIONS")
         return
 
-    try:
-        # If we have the pytest_rerunfailures plugin,
-        # and there are still retries to be run,
-        # then do not return the error
+    # If we have the pytest_rerunfailures plugin,
+    # and there are still retries to be run,
+    # then do not return the error
+    if hasattr(item, "execution_count"):
         import pytest_rerunfailures
 
-        if hasattr(
-            item, "execution_count"
-        ) and item.execution_count <= pytest_rerunfailures.get_reruns_count(item):
+        if item.execution_count <= pytest_rerunfailures.get_reruns_count(item):
             return
-    except ImportError:
-        pass
+    else:
+        print("no pytest_rerunfailures")
 
     if report.when == "call" and report.failed:
         # collect information to be annotated
@@ -85,6 +84,7 @@ def pytest_runtest_makereport(item, call):
             lineno = report.longrepr.reprcrash.lineno
 
         except AttributeError:
+            print("NO LONG REPR")
             pass
 
         print(  # noqa: B314
